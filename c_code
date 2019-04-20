@@ -1,0 +1,163 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node{
+	int data;
+	node *sol;
+	node *sag;
+}node;
+
+node * ekle(node *agac,int x)
+{
+
+	if(agac==NULL)
+	{
+		node * root = (node *)malloc(sizeof(node));
+		root->sol = NULL;
+		root->sag = NULL;
+		root->data = x;
+		return root;
+	}
+	if(agac->data < x)
+	{
+		agac->sag = ekle(agac->sag,x);
+		return agac;
+	}
+	agac->sol = ekle(agac->sol,x);
+	return agac;
+
+}
+void dolas(node *agac)
+{
+	if(agac == NULL)
+		return;
+	dolas(agac->sol);
+	printf("%d ",agac->data);
+	dolas(agac->sag);
+}
+
+int bul(node *agac,int x)
+{
+	if( agac == NULL)
+		return 0;
+	if(agac->data == x)
+		return 1;
+	if(bul(agac->sag,x) == 1)
+		return 1;
+	if(bul(agac->sol,x) == 1)
+		return 1;
+	return 0;
+}
+
+int max(node *agac)
+{
+	if(agac->sag==NULL)
+		return agac->data;
+	max(agac->sag);
+}
+
+int min(node *agac)
+{
+	if(agac->sol==NULL)
+		return agac->data;
+	min(agac->sol);
+}
+
+node * sil(node *agac,int x)
+{
+	if(agac==NULL)
+		return NULL;
+	if(agac->data == x)
+	{
+		if(agac->sag==NULL && agac->sol == NULL)
+			return NULL;
+		if(agac->sag != NULL)
+		{
+			agac->data = min(agac->sag);
+			agac->sag = sil(agac->sag,min(agac->sag));
+			return agac;
+		}
+		agac->data = max(agac->sol);
+		agac->sol = sil(agac->sol,max(agac->sol));
+		return agac;
+	}
+	if(agac->data < x)
+	{
+		agac->sag = sil(agac->sag,x);
+		return agac;
+	}
+	agac->sol = sil(agac->sol,x);
+	return agac;
+}
+
+int say(node * agac)
+{
+	if(agac==NULL)
+		return 0;
+	else
+		return say(agac->sol)+1+say(agac->sag);
+}
+
+int yukseklik(node *agac)
+{
+	if(agac==NULL)
+		return 0;
+	int a,b;
+	a = say(agac->sol);
+	b = say(agac->sag);
+	if(a>b)
+		return yukseklik(agac->sol)+1;
+	return yukseklik(agac->sag)+1;
+}
+
+int main()
+{
+	int a;
+	node * root =NULL;
+	while(1)
+	{
+		printf("\n1)ekle\n2)dolas\n3)bul\n4)maxbul\n5)minbul\n6)sil\n7)elemansayisi\n8)yuksekligi\n");
+		printf("secim:");
+		scanf("%d",&a);
+		switch(a)
+		{
+			int n,b,c,t;
+			case 1:
+				printf("eklenecek eleman:");
+				scanf("%d",&n);
+				root = ekle(root,n);
+				break;
+			case 2:
+				dolas(root);
+				break;
+			case 3:
+				printf("bulunacak eleman:");
+				scanf("%d",&b);
+				c = bul(root,b);
+				if(c==1)
+					printf("eleman bulundu.\n");
+				else
+					printf("eleman bulunamadi.\n");
+				break;
+			case 4:
+				printf("max eleman: %d",max(root));
+				break;
+			case 5:
+				printf("min eleman: %d",min(root));
+				break;
+			case 6:
+				printf("silinecek eleman:");
+				scanf("%d",&t);
+				root = sil(root,t);
+				break;
+			case 7:
+				printf("agactaki eleman sayisi: %d",say(root));
+				break;
+
+			case 8:
+				printf("agacin yuksekligi: %d",yukseklik(root));
+				break;
+		}
+
+	}
+}
